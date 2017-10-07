@@ -1,5 +1,6 @@
 var model = {
     currentCat: null,
+    adminMode: false,
     cats: [
         {
             clickCount: 0,
@@ -26,6 +27,8 @@ var octopus = {
 
         catListView.init();
         catView.init();
+        admin.init();
+        displayAdmin.hide();
     },
 
     getCurrentCat: function() {
@@ -38,10 +41,31 @@ var octopus = {
 
     setCurrentCat: function(cat) {
         model.currentCat = cat;
+        catView.render();
     },
 
     incrementCounter: function() {
         model.currentCat.clickCount++;
+        catView.render();
+    },
+
+    toggleAdmin: function() {
+        if (model.adminMode) {
+            model.adminMode = false;
+            displayAdmin.hide();
+        } else {
+            model.adminMode = true;
+            displayAdmin.init();
+        };
+    },
+
+    setCat: function(newName, newCC) {
+        model.currentCat.name = newName;
+        if (newCC) {
+            model.currentCat.clickCount = newCC;
+        };
+        displayAdmin.init();
+        catListView.render();
         catView.render();
     }
 };
@@ -97,12 +121,50 @@ var catListView = {
             elem.addEventListener('click', (function(catCopy) {
                 return function() {
                     octopus.setCurrentCat(catCopy);
-                    catView.render();
                 };
             })(cat));
 
             this.catListElem.appendChild(elem);
         };
+    }
+};
+
+var displayAdmin = {
+
+    init: function() {
+        //this.adminFormElem = document.getElementById('admin-form');
+        document.getElementById('new-name').style.visibility = "visible";
+        document.getElementById('new-cc').style.visibility = "visible";
+        document.getElementById('save').style.visibility = "visible";
+        document.getElementById('cancel').style.visibility = "visible";
+    },
+
+    hide: function() {
+
+        document.getElementById('new-name').style.visibility = "hidden";
+        document.getElementById('new-cc').style.visibility = "hidden";
+
+        saveButtonElem = document.getElementById('save');
+        saveButtonElem.addEventListener('click', function(){
+            octopus.setCat(document.getElementById('new-name').value,
+                parseInt(document.getElementById('new-cc').value));
+        });
+        saveButtonElem.style.visibility = "hidden";
+        cancelButtonElem = document.getElementById('cancel')
+        cancelButtonElem.addEventListener('click', function(){
+            octopus.toggleAdmin();
+        });
+        cancelButtonElem.style.visibility = "hidden";
+    }
+};
+
+var admin = {
+
+    init: function() {
+        this.adminButtonElem = document.getElementById('admin-button');
+        this.adminButtonElem.addEventListener('click', function(){
+            octopus.toggleAdmin();
+        });
     }
 };
 
