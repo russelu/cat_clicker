@@ -1,0 +1,1 @@
+This is a little web app that counts how many times you click on each cat picture.
